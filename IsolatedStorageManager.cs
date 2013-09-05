@@ -15,7 +15,17 @@ namespace MSPTurkey13
 
         private static StorageManager _instance;
         private StorageManager() { }
-        public static StorageManager Current;
+        public static StorageManager Current
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new StorageManager();
+                }
+                return _instance;
+            }
+        }
 
         #endregion
 
