@@ -13,8 +13,9 @@ namespace MSPTurkey13
     {
         #region Singleton
 
+        private string prefix;
         private static StorageManager _instance;
-        private StorageManager() { }
+        private StorageManager() { prefix = "your_app_name_"; }
         public static StorageManager Current
         {
             get
@@ -42,6 +43,21 @@ namespace MSPTurkey13
             }
         }
 
+        public void ClearAll()
+        {
+            using (IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                string[] relatedfiles = isf.GetFileNames(string.Format("{0}*", prefix));
+                foreach (string file in relatedfiles)
+                {
+                    if (isf.FileExists(file))
+                    {
+                        isf.DeleteFile(file);
+                    }
+                }
+            }
+        }
+
         public T Get<T>(string key)
         {
             T ObjToLoad = default(T);
@@ -61,11 +77,15 @@ namespace MSPTurkey13
                     }
                     else
                     {
-                        // may be throw not found exception
+                        throw new NotFoundOnIsolatedStorageException(key);
                     }
 
                 }
 
+            }
+            catch (NotFoundOnIsolatedStorageException)
+            {
+                throw;
             }
             catch (Exception error)
             {
@@ -97,7 +117,7 @@ namespace MSPTurkey13
 
         private string GetFileName(string key)
         {
-            return string.Format("{0}.data", key);
+            return string.Format("{0}{1}.data", prefix, key);
         }
 
         #endregion
