@@ -1,0 +1,4 @@
+IsolatedStorageManager
+======================
+
+IsolatedStorageManager
